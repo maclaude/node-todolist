@@ -3,7 +3,10 @@ import compression from "compression";
 import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
+import mongoose from "mongoose";
 import morgan from "morgan";
+
+import authRoutes from "./routes/auth";
 
 // Environment variables (.env)
 dotenv.config();
@@ -36,12 +39,31 @@ app.use(helmet());
 // Compress all responses
 app.use(compression());
 
+// Routes
+app.use("/auth", authRoutes);
+
 app.get("/", (req, res) => {
   res.json({title: "Hello World !"});
 });
 
-const port = process.env.PORT || 3000;
+/**
+ * Database connexion with Mongoose
+ */
+// Database env variables
+const {
+  MONGO_DB_USER,
+  MONGO_DB_PASSWORD,
+} = process.env;
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+// Database URI
+const DB_URI = `mongodb+srv://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@cluster-node-todolist.msl8yjl.mongodb.net/`
+
+mongoose
+  .connect(DB_URI)
+  .then(response => {
+    console.log('Connected');
+
+    // Starting the server
+    app.listen(process.env.PORT || 3000);
+  })
+  .catch(error => console.log(error));

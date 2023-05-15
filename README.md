@@ -8,3 +8,6 @@
 - [compression](https://www.npmjs.com/package/compression)
 - [helmet](https://www.npmjs.com/package/helmet)
 - [morgan](https://www.npmjs.com/package/morgan)
+- [bcrypt](https://www.npmjs.com/package/bcrypt)
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
+- [mongoose](https://www.npmjs.com/package/mongoose)
