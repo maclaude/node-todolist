@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-// import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import User from '../models/user';
 
@@ -12,10 +12,7 @@ export const signup = async (req, res, next) => {
 
     // If email address already used, throw an error
     if (user) {
-      const error = new Error('Email address already used');
-      // @ts-ignore TODO type error object
-      error.statusCode = 422;
-      throw error;
+      throw new Error('Email address already used');
     }
 
     // Encrypting password
@@ -40,4 +37,52 @@ export const signup = async (req, res, next) => {
     // Next to reach the error middleware
     next(error);
   }
-}
+};
+
+export const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    // Finding current user by email & Fetching user's projects data
+    const user = await User.findOne({ email }).lean();
+
+    // Throw an error if nothing is retrieved
+    if (!user) {
+      throw new Error('User not foun with given email');
+    }
+
+    // Comparing passwords
+    const passwordsMatched = await bcrypt.compare(password, user.password);
+    // Throw an error if passwords don't match
+    if (!passwordsMatched) {
+      throw new Error('Incorect password');
+    }
+
+    // Generating token
+    const token = jwt.sign(
+      {
+        email: user.email,
+        userId: user._id.toString(),
+      },
+      'secret',
+      { expiresIn: '12h' },
+    );
+
+    // Response object
+    const response = {
+      id: user._id.toString(),
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+    };
+
+    // Sending client response
+    res.status(200).json({ token, user: response });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+};
