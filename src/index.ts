@@ -1,12 +1,18 @@
+/* eslint-disable no-console */
+
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
+import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 
 import authRoutes from './routes/auth';
+import todoRoutes from './routes/todo';
+import todolistRoutes from './routes/todolist';
+import userRoutes from './routes/user';
 
 // Environment variables (.env)
 dotenv.config();
@@ -41,9 +47,18 @@ app.use(compression());
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/todolist', todolistRoutes);
+app.use('/todo', todoRoutes);
 
-app.get('/home', (req, res) => {
-  res.json({ title: 'Hello World !' });
+// Error Handling
+app.use((error, req, res, next) => {
+  console.error('Request error', error);
+
+  const status = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+  const { message, data } = error;
+
+  res.status(status).json({ message, data });
 });
 
 /**
@@ -63,4 +78,4 @@ mongoose
     // Starting the server
     app.listen(process.env.PORT || 3000);
   })
-  .catch((error) => console.log('Error:', error));
+  .catch((error) => console.error('DB connexion error:', error));

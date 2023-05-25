@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const { model, Schema } = mongoose;
 
@@ -23,8 +23,15 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
+    todolists: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Todolist',
+      },
+    ],
   },
   // createdAt - updatedAt
-  { timestamps: true });
+  { timestamps: true },
+);
 
 export default model('User', userSchema);

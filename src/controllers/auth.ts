@@ -1,7 +1,9 @@
 import bcrypt from 'bcrypt';
+import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 
 import User from '../models/user';
+import { CustomError } from '../utils/customError';
 
 export const signup = async (req, res, next) => {
   const { firstname, lastname, email, password } = req.body;
@@ -12,7 +14,10 @@ export const signup = async (req, res, next) => {
 
     // If email address already used, throw an error
     if (user) {
-      throw new Error('Email address already used');
+      throw new CustomError(
+        'Email address already used',
+        StatusCodes.UNPROCESSABLE_ENTITY,
+      );
     }
 
     // Encrypting password
@@ -28,10 +33,12 @@ export const signup = async (req, res, next) => {
     const response = await newUser.save();
 
     // Sending client response
-    res.status(201).json({ message: 'User created', userId: response._id });
+    res
+      .status(StatusCodes.CREATED)
+      .json({ message: 'User created', userId: response._id });
   } catch (error) {
     if (!error.statusCode) {
-      error.statusCode = 500;
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
     }
 
     // Next to reach the error middleware
@@ -48,14 +55,17 @@ export const signin = async (req, res, next) => {
 
     // Throw an error if nothing is retrieved
     if (!user) {
-      throw new Error('User not foun with given email');
+      throw new CustomError(
+        'User not found with given email',
+        StatusCodes.NOT_FOUND,
+      );
     }
 
     // Comparing passwords
     const passwordsMatched = await bcrypt.compare(password, user.password);
     // Throw an error if passwords don't match
     if (!passwordsMatched) {
-      throw new Error('Incorect password');
+      throw new CustomError('Incorrect password', StatusCodes.UNAUTHORIZED);
     }
 
     // Generating token
@@ -77,12 +87,12 @@ export const signin = async (req, res, next) => {
     };
 
     // Sending client response
-    res.status(200).json({ token, user: response });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
+    res.status(StatusCodes.OK).json({ token, user: response });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
     }
 
-    next(err);
+    next(error);
   }
 };
