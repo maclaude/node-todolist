@@ -8,7 +8,9 @@ const router = express.Router();
 /**
  * Routes
  */
-// POST /todolist/new-todo
+// POST /todo/new-todo
 router.post('/new-todo', isAuth, todoController.postNewTodo);
+// PATCH /todo/:id
+router.patch('/:id', isAuth, todoController.updateTodoStatus);
 
 export default router;

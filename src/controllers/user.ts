@@ -7,7 +7,6 @@ export const getUserTodolists = async (req, res, next) => {
   const { userId } = req;
 
   try {
-    // Finding current user data
     const user = await User.findById(userId)
       .populate({
         path: 'todolists',
@@ -27,16 +26,12 @@ export const getUserTodolists = async (req, res, next) => {
 
     const { todolists } = user;
 
-    // Sending client response
     if (!todolists.length) {
-      res.status(204).json({
+      res.status(StatusCodes.NOT_FOUND).json({
         message: 'No todolist founded',
       });
     } else {
-      res.status(200).json({
-        message: `${todolists.length} todolists found`,
-        todolists,
-      });
+      res.status(StatusCodes.OK).json(todolists);
     }
   } catch (error) {
     if (!error.statusCode) {

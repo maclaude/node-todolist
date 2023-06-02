@@ -75,7 +75,7 @@ export const signin = async (req, res, next) => {
         userId: user._id.toString(),
       },
       'secret',
-      { expiresIn: '12h' },
+      { expiresIn: '72h' },
     );
 
     // Response object
