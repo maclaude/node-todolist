@@ -10,7 +10,9 @@ const router = express.Router();
  */
 // POST /todolist/new-todolist
 router.post('/new-todolist', isAuth, todolistController.postNewTodolist);
-// PATCH /todolist/:id
-router.patch('/:id', isAuth, todolistController.updateTodolistStatus);
+// PATCH /todolist/status/:id
+router.patch('/status/:id', isAuth, todolistController.updateTodolistStatus);
+// PATCH /todolist/status/:id
+router.patch('/title/:id', isAuth, todolistController.updateTodolistTitle);
 
 export default router;

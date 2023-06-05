@@ -67,3 +67,33 @@ export const updateTodolistStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateTodolistTitle = async (req, res, next) => {
+  const { title } = req.body;
+  const { id } = req.params;
+
+  try {
+    const todolist = await Todolist.findById(id);
+
+    if (!todolist) {
+      throw new CustomError(
+        'Could not find the requested todolist',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    todolist.title = title;
+    const response = await todolist.save();
+
+    res.status(StatusCodes.OK).json({
+      id: response._id.toString(),
+      title: response.title,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
