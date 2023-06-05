@@ -10,5 +10,7 @@ const router = express.Router();
  */
 // GET /user/todolists
 router.get('/todolists', isAuth, userController.getUserTodolists);
+// DELETE /user/todolists
+router.delete('/todolists', isAuth, userController.deleteUserTodolists);
 
 export default router;
