@@ -71,3 +71,34 @@ export const updateTodoStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateTodoTitle = async (req, res, next) => {
+  const { title } = req.body;
+  const { id } = req.params;
+
+  try {
+    const todo = await Todo.findById(id);
+
+    if (!todo) {
+      throw new CustomError(
+        'Could not find the requested todo',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    todo.title = title;
+
+    const response = await todo.save();
+
+    res.status(StatusCodes.OK).json({
+      id: response._id.toString(),
+      title: response.title,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
