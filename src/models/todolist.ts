@@ -12,12 +12,26 @@ const todolistSchema = new Schema(
       type: String,
       required: true,
     },
-    items: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Todo',
-      },
-    ],
+    items: {
+      ongoing: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Todo',
+        },
+      ],
+      complete: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Todo',
+        },
+      ],
+      delete: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Todo',
+        },
+      ],
+    },
   },
   // createdAt - updatedAt
   { timestamps: true },

@@ -14,6 +14,20 @@ export const getUserTodolists = async (req, res, next) => {
         populate: {
           path: 'items',
           model: 'Todo',
+          populate: [
+            {
+              path: 'ongoing',
+              model: 'Todo',
+            },
+            {
+              path: 'complete',
+              model: 'Todo',
+            },
+            {
+              path: 'delete',
+              model: 'Todo',
+            },
+          ],
         },
       })
       .lean();
