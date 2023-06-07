@@ -44,6 +44,38 @@ export const getTodolist = async (req, res, next) => {
   }
 };
 
+export const getTodolistTodosByStatus = async (req, res, next) => {
+  const { id, status } = req.params;
+
+  try {
+    const todolist = await Todolist.findById(id).populate({
+      path: 'items',
+      model: 'Todo',
+      populate: [
+        {
+          path: status,
+          model: 'Todo',
+        },
+      ],
+    });
+
+    if (!todolist.items[status]) {
+      throw new CustomError(
+        `Could not find the requested todolist ${status} items`,
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    res.status(StatusCodes.OK).json(todolist.items[status]);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
 export const postNewTodolist = async (req, res, next) => {
   const { title, status, userId } = req.body;
 
