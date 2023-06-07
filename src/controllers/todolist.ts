@@ -4,6 +4,46 @@ import Todolist from '../models/todolist';
 import User from '../models/user';
 import { CustomError } from '../utils/customError';
 
+export const getTodolist = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const todolist = await Todolist.findById(id).populate({
+      path: 'items',
+      model: 'Todo',
+      populate: [
+        {
+          path: 'ongoing',
+          model: 'Todo',
+        },
+        {
+          path: 'complete',
+          model: 'Todo',
+        },
+        {
+          path: 'delete',
+          model: 'Todo',
+        },
+      ],
+    });
+
+    if (!todolist) {
+      throw new CustomError(
+        'Could not find the requested todolist',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    res.status(StatusCodes.OK).json(todolist);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
 export const postNewTodolist = async (req, res, next) => {
   const { title, status, userId } = req.body;
 

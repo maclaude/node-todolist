@@ -8,6 +8,8 @@ const router = express.Router();
 /**
  * Routes
  */
+// GET /todolist/:id
+router.get('/:id', isAuth, todolistController.getTodolist);
 // POST /todolist/new-todolist
 router.post('/new-todolist', isAuth, todolistController.postNewTodolist);
 // PATCH /todolist/status/:id
