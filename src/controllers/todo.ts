@@ -11,7 +11,7 @@ export const postNewTodo = async (req, res, next) => {
     const newTodo = await new Todo({
       title,
     });
-    const response = await newTodo.save();
+    await newTodo.save();
 
     const todolist = await Todolist.findById(todolistId);
 
@@ -23,13 +23,7 @@ export const postNewTodo = async (req, res, next) => {
     todolist.items.ongoing.push(newTodo._id);
     await todolist.save();
 
-    res.status(StatusCodes.CREATED).json({
-      message: 'Todo created',
-      data: {
-        id: response._id.toString(),
-        title: response.title,
-      },
-    });
+    res.status(StatusCodes.CREATED).json(todolist);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;

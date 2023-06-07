@@ -64,11 +64,7 @@ export const postNewTodolist = async (req, res, next) => {
     user.todolists.push(newTodolist._id);
     await user.save();
 
-    res.status(StatusCodes.CREATED).json({
-      id: response._id.toString(),
-      title: response.title,
-      status: response.status,
-    });
+    res.status(StatusCodes.CREATED).json(response);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -95,10 +91,7 @@ export const updateTodolistStatus = async (req, res, next) => {
     todolist.status = status;
     const response = await todolist.save();
 
-    res.status(StatusCodes.OK).json({
-      id: response._id.toString(),
-      status: response.status,
-    });
+    res.status(StatusCodes.OK).json(response);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -125,10 +118,7 @@ export const updateTodolistTitle = async (req, res, next) => {
     todolist.title = title;
     const response = await todolist.save();
 
-    res.status(StatusCodes.OK).json({
-      id: response._id.toString(),
-      title: response.title,
-    });
+    res.status(StatusCodes.OK).json(response);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
