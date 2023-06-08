@@ -159,3 +159,39 @@ export const updateTodolistTitle = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateTodolistTodosOrder = async (req, res, next) => {
+  const { newItems } = req.body;
+  const { id } = req.params;
+
+  try {
+    const updatedTodolist = await Todolist.findOneAndUpdate(
+      { _id: id },
+      { $set: { 'items.ongoing': newItems } },
+    ).populate({
+      path: 'items',
+      model: 'Todo',
+      populate: [
+        {
+          path: 'ongoing',
+          model: 'Todo',
+        },
+      ],
+    });
+
+    if (!updatedTodolist) {
+      throw new CustomError(
+        'Could not update the requested todolist',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    res.status(StatusCodes.OK).json(updatedTodolist.items.ongoing);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
