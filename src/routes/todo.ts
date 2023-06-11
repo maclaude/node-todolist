@@ -10,6 +10,7 @@ const router = express.Router();
  */
 // POST /todo/new-todo
 router.post('/new-todo', isAuth, todoController.postNewTodo);
+
 // PATCH /todo/status/:id
 router.patch('/status/:id', isAuth, todoController.updateTodoStatus);
 // PATCH /todo/title/:id

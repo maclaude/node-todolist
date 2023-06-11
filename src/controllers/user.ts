@@ -55,6 +55,55 @@ export const getUserTodolists = async (req, res, next) => {
   }
 };
 
+export const updateTodolistsOrder = async (req, res, next) => {
+  const { userId } = req;
+  const { newItems } = req.body;
+
+  try {
+    const updatedUserTodolists = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { todolists: newItems } },
+    )
+      .populate({
+        path: 'todolists',
+        populate: {
+          path: 'items',
+          model: 'Todo',
+          populate: [
+            {
+              path: 'ongoing',
+              model: 'Todo',
+            },
+            {
+              path: 'complete',
+              model: 'Todo',
+            },
+            {
+              path: 'delete',
+              model: 'Todo',
+            },
+          ],
+        },
+      })
+      .lean();
+
+    if (!updatedUserTodolists) {
+      throw new CustomError(
+        'Could not update the requested user todolists',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    res.status(StatusCodes.OK).json(updatedUserTodolists.todolists);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
 export const deleteUserTodolists = async (req, res, next) => {
   const { userId } = req;
 

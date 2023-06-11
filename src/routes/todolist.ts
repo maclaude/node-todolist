@@ -18,7 +18,7 @@ router.post('/new-todolist', isAuth, todolistController.postNewTodolist);
 
 // PATCH /todolist/status/:id
 router.patch('/status/:id', isAuth, todolistController.updateTodolistStatus);
-// PATCH /todolist/status/:id
+// PATCH /todolist/title/:id
 router.patch('/title/:id', isAuth, todolistController.updateTodolistTitle);
 // PATCH /todolist/todos/:id
 router.patch('/todos/:id', isAuth, todolistController.updateTodolistTodosOrder);
