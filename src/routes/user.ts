@@ -10,6 +10,8 @@ const router = express.Router();
  */
 // GET /user/todolists
 router.get('/todolists', isAuth, userController.getUserTodolists);
+// GET /user/notes
+router.get('/notes', isAuth, userController.getUserNotes);
 
 // PATCH /user/todolists
 router.patch('/todolists', isAuth, userController.updateTodolistsOrder);

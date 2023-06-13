@@ -29,6 +29,12 @@ const userSchema = new Schema(
         ref: 'Todolist',
       },
     ],
+    notes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Note',
+      },
+    ],
   },
   // createdAt - updatedAt
   { timestamps: true },

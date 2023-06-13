@@ -55,6 +55,39 @@ export const getUserTodolists = async (req, res, next) => {
   }
 };
 
+export const getUserNotes = async (req, res, next) => {
+  const { userId } = req;
+
+  try {
+    const user = await User.findById(userId)
+      .populate({
+        path: 'notes',
+      })
+      .lean();
+
+    if (!user) {
+      throw new CustomError(
+        'Could not find the requested user',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    const { notes } = user;
+
+    if (!notes.length) {
+      res.status(StatusCodes.OK).json([]);
+    } else {
+      res.status(StatusCodes.OK).json(notes);
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
 export const updateTodolistsOrder = async (req, res, next) => {
   const { userId } = req;
   const { newItems } = req.body;

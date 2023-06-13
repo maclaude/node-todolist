@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 
 import authRoutes from './routes/auth';
+import noteRoutes from './routes/note';
 import todoRoutes from './routes/todo';
 import todolistRoutes from './routes/todolist';
 import userRoutes from './routes/user';
@@ -50,6 +51,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/todolist', todolistRoutes);
 app.use('/todo', todoRoutes);
+app.use('/note', noteRoutes);
 
 // Error Handling
 app.use((error, req, res, next) => {
