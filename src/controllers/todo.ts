@@ -4,6 +4,29 @@ import Todo from '../models/todo';
 import Todolist from '../models/todolist';
 import { CustomError } from '../utils/customError';
 
+export const getTodo = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const todo = await Todo.findById(id);
+
+    if (!todo) {
+      throw new CustomError(
+        'Could not find the requested todo',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    res.status(StatusCodes.OK).json(todo);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
 export const postNewTodo = async (req, res, next) => {
   const { title, todolistId } = req.body;
 
@@ -84,6 +107,37 @@ export const updateTodoStatus = async (req, res, next) => {
     todolist.save();
 
     res.status(StatusCodes.OK).json();
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
+export const updateTodoDetails = async (req, res, next) => {
+  const { title, notes, date, priority } = req.body;
+  const { id } = req.params;
+
+  try {
+    const todo = await Todo.findById(id);
+
+    if (!todo) {
+      throw new CustomError(
+        'Could not find the requested todo',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    todo.title = title;
+    todo.notes = notes;
+    todo.date = date;
+    todo.priority = priority;
+
+    const response = await todo.save();
+
+    res.status(StatusCodes.OK).json(response);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;

@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
+import Todo from '../models/todo';
 import Todolist from '../models/todolist';
 import User from '../models/user';
 import { CustomError } from '../utils/customError';
@@ -154,6 +155,13 @@ export const deleteUserTodolists = async (req, res, next) => {
 
     await Promise.all(
       todolistsIds.map(async (todolistId) => {
+        const todolist = await Todolist.findById(todolistId);
+        const todoIds = [
+          ...todolist.items.ongoing,
+          ...todolist.items.complete,
+          ...todolist.items.delete,
+        ];
+        await Todo.deleteMany({ _id: { $in: todoIds } });
         await Todolist.findByIdAndDelete(todolistId);
       }),
     );
@@ -161,6 +169,32 @@ export const deleteUserTodolists = async (req, res, next) => {
     await User.findByIdAndUpdate(userId, { todolists: [] });
 
     res.status(StatusCodes.OK).json();
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
+export const deleteUserNotes = async (req, res, next) => {
+  const { userId } = req;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new CustomError(
+        'Could not find the requested user',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    user.notes = [];
+    const response = await user.save();
+
+    res.status(StatusCodes.OK).json(response.notes);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
