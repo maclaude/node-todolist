@@ -33,6 +33,7 @@ export const postNewTodo = async (req, res, next) => {
   try {
     const newTodo = await new Todo({
       title,
+      status: "new",
     });
     await newTodo.save();
 
@@ -42,8 +43,8 @@ export const postNewTodo = async (req, res, next) => {
       throw new CustomError('Could not find the related todolist', 404);
     }
 
-    // Adding newTodo objectId to the todolist's items ongoing
-    todolist.items.ongoing.push(newTodo._id);
+    // Adding newTodo objectId to the todolist's new items
+    todolist.items.new.push(newTodo._id);
     await todolist.save();
 
     res.status(StatusCodes.CREATED).json(todolist);
@@ -99,12 +100,24 @@ export const updateTodoStatus = async (req, res, next) => {
 
     if (!todolist) {
       throw new CustomError(
+        'Could not find the requested todolist',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    const todo = await Todo.findById(id);
+
+    if (!todo) {
+      throw new CustomError(
         'Could not find the requested todo',
         StatusCodes.NOT_FOUND,
       );
     }
 
-    todolist.save();
+    todo.status = newStatus;
+
+    await todo.save();
+    await todolist.save();
 
     res.status(StatusCodes.OK).json();
   } catch (error) {

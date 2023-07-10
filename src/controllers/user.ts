@@ -17,6 +17,10 @@ export const getUserTodolists = async (req, res, next) => {
           model: 'Todo',
           populate: [
             {
+              path: 'new',
+              model: 'Todo',
+            },
+            {
               path: 'ongoing',
               model: 'Todo',
             },
@@ -105,6 +109,10 @@ export const updateTodolistsOrder = async (req, res, next) => {
           model: 'Todo',
           populate: [
             {
+              path: 'new',
+              model: 'Todo',
+            },
+            {
               path: 'ongoing',
               model: 'Todo',
             },
@@ -157,6 +165,7 @@ export const deleteUserTodolists = async (req, res, next) => {
       todolistsIds.map(async (todolistId) => {
         const todolist = await Todolist.findById(todolistId);
         const todoIds = [
+          ...todolist.items.new,
           ...todolist.items.ongoing,
           ...todolist.items.complete,
           ...todolist.items.delete,

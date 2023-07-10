@@ -13,6 +13,10 @@ export const getTodolist = async (req, res, next) => {
       model: 'Todo',
       populate: [
         {
+          path: 'new',
+          model: 'Todo',
+        },
+        {
           path: 'ongoing',
           model: 'Todo',
         },
@@ -161,19 +165,19 @@ export const updateTodolistTitle = async (req, res, next) => {
 };
 
 export const updateTodolistTodosOrder = async (req, res, next) => {
-  const { newItems } = req.body;
+  const { newItems, section } = req.body;
   const { id } = req.params;
 
   try {
     const updatedTodolist = await Todolist.findOneAndUpdate(
       { _id: id },
-      { $set: { 'items.ongoing': newItems } },
+      { $set: { [`items.${section}`]: newItems } },
     ).populate({
       path: 'items',
       model: 'Todo',
       populate: [
         {
-          path: 'ongoing',
+          path: section,
           model: 'Todo',
         },
       ],

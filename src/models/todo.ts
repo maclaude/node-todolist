@@ -8,6 +8,10 @@ const todoSchema = new Schema(
       type: String,
       required: true,
     },
+    status: {
+      type: String,
+      required: true,
+    },
     notes: {
       type: String,
       required: false,

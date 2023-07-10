@@ -13,6 +13,12 @@ const todolistSchema = new Schema(
       required: true,
     },
     items: {
+      new: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Todo',
+        },
+      ],
       ongoing: [
         {
           type: Schema.Types.ObjectId,
