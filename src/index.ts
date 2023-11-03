@@ -63,6 +63,12 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message, data });
 });
 
+app.get('/', (req, res) => {
+  res.status(StatusCodes.OK).json({
+    message: 'You are connected 🌴',
+  });
+});
+
 /**
  * Database connexion with Mongoose
  */
@@ -81,3 +87,5 @@ mongoose
     app.listen(process.env.PORT || 3000);
   })
   .catch((error) => console.error('DB connexion error:', error));
+
+export default app;
