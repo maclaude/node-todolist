@@ -55,17 +55,24 @@ export const signin = async (req, res, next) => {
 
     // Throw an error if nothing is retrieved
     if (!user) {
-      throw new CustomError(
-        'User not found with given email',
-        StatusCodes.NOT_FOUND,
-      );
+      return res.status(StatusCodes.OK).json({
+        error: {
+          code: 1,
+          message: 'Aucune utilisateur trouvé avec cet email',
+        },
+      });
     }
 
     // Comparing passwords
     const passwordsMatched = await bcrypt.compare(password, user.password);
     // Throw an error if passwords don't match
     if (!passwordsMatched) {
-      throw new CustomError('Incorrect password', StatusCodes.UNAUTHORIZED);
+      return res.status(StatusCodes.OK).json({
+        error: {
+          code: 2,
+          message: 'Mot de passe incorrect',
+        },
+      });
     }
 
     // Generating token
@@ -87,12 +94,12 @@ export const signin = async (req, res, next) => {
     };
 
     // Sending client response
-    res.status(StatusCodes.OK).json({ token, user: response });
+    return res.status(StatusCodes.OK).json({ token, user: response });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
     }
 
-    next(error);
+    return next(error);
   }
 };
