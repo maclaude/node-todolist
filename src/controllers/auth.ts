@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 
 import User from '../models/user';
-import { CustomError } from '../utils/customError';
 
 export const signup = async (req, res, next) => {
   const { firstname, lastname, email, password } = req.body;
@@ -14,10 +13,12 @@ export const signup = async (req, res, next) => {
 
     // If email address already used, throw an error
     if (user) {
-      throw new CustomError(
-        'Email address already used',
-        StatusCodes.UNPROCESSABLE_ENTITY,
-      );
+      return res.status(StatusCodes.OK).json({
+        error: {
+          code: 3,
+          message: 'Adresse email déjà utilisée',
+        },
+      });
     }
 
     // Encrypting password
@@ -33,7 +34,7 @@ export const signup = async (req, res, next) => {
     const response = await newUser.save();
 
     // Sending client response
-    res
+    return res
       .status(StatusCodes.CREATED)
       .json({ message: 'User created', userId: response._id });
   } catch (error) {
@@ -42,7 +43,7 @@ export const signup = async (req, res, next) => {
     }
 
     // Next to reach the error middleware
-    next(error);
+    return next(error);
   }
 };
 
