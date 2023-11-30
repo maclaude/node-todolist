@@ -14,6 +14,8 @@ router.get('/:id', isAuth, noteController.getNote);
 // POST /note/new-note
 router.post('/new-note', isAuth, noteController.postNewNote);
 
+// PATCH /note/status/:id
+router.patch('/status/:id', isAuth, noteController.updateNoteStatus);
 // PATCH /note/title/:id
 router.patch('/title/:id', isAuth, noteController.updateNoteTitle);
 // PATCH /note/content/:id

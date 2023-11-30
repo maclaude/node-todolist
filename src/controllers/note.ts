@@ -29,11 +29,12 @@ export const getNote = async (req, res, next) => {
 
 export const postNewNote = async (req, res, next) => {
   const { userId } = req;
-  const { title, content } = req.body;
+  const { title, content, status } = req.body;
 
   try {
     const newNote = await new Note({
       title,
+      status,
       content,
     });
     await newNote.save();
@@ -51,6 +52,33 @@ export const postNewNote = async (req, res, next) => {
     user.save();
 
     res.status(StatusCodes.CREATED).json(newNote);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+
+    next(error);
+  }
+};
+
+export const updateNoteStatus = async (req, res, next) => {
+  const { status } = req.body;
+  const { id } = req.params;
+
+  try {
+    const note = await Note.findById(id);
+
+    if (!note) {
+      throw new CustomError(
+        'Could not find the requested note',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    note.status = status;
+    const response = await note.save();
+
+    res.status(StatusCodes.OK).json(response);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
