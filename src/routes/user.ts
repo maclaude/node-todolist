@@ -18,5 +18,7 @@ router.patch('/todolists', isAuth, userController.updateTodolistsOrder);
 
 // DELETE /user/todolists
 router.delete('/todolists', isAuth, userController.deleteUserTodolists);
+// DELETE /user/account
+router.delete('/account', isAuth, userController.deleteUserAccount);
 
 export default router;

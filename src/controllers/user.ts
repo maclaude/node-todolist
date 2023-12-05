@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
+import Note from '../models/note';
 import Todo from '../models/todo';
 import Todolist from '../models/todolist';
 import User from '../models/user';
@@ -210,5 +211,36 @@ export const deleteUserNotes = async (req, res, next) => {
     }
 
     next(error);
+  }
+};
+
+export const deleteUserAccount = async (req, res, next) => {
+  const { userId } = req;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new CustomError(
+        'Could not find the requested user',
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    // Remove Todolists associated with the user
+    await Todolist.deleteMany({ _id: { $in: user.todolists } });
+
+    // Remove Notes associated with the user
+    await Note.deleteMany({ _id: { $in: user.notes } });
+
+    // Now, remove the user
+    await user.deleteOne();
+
+    // Respond with success message
+    res.status(StatusCodes.OK).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
   }
 };
