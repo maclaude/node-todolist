@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 
 import authRoutes from './routes/auth';
+import emailRoutes from './routes/email';
 import noteRoutes from './routes/note';
 import todoRoutes from './routes/todo';
 import todolistRoutes from './routes/todolist';
@@ -24,6 +25,7 @@ const app = express();
 // Parser (parsing the incoming JSON data)
 // ! This middleware should always be placed first
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Set responses CORS headers
 app.use((req, res, next) => {
@@ -52,6 +54,7 @@ app.use('/user', userRoutes);
 app.use('/todolist', todolistRoutes);
 app.use('/todo', todoRoutes);
 app.use('/note', noteRoutes);
+app.use('/email', emailRoutes);
 
 // Error Handling
 app.use((error, req, res, next) => {
